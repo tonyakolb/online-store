@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=star" />
+    <title>Магазин книг "Библиофил"</title>
+</head>
+
+<body>
+    <nav>
+        <ul class="container nav">           
+            <li>
+                <a href="#shop-items">Каталог</a>
+            </li>
+            <li>
+                <a href="#" class="logo">Библиофил</a>
+            </li>
+            <li>
+                <a href="#">Избранное</a>
+                <span id="favourite-items">0</span>
+            </li>
+            <li>
+                <div class="site-search">
+                    <input type="search" id="search-input">
+                    <button type="button" id="search-btn" class="fa fa-search"></i>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <div class="filters">
+            <div class="filters-sort">
+                <label for="sort">Сортировка:</label>
+                <select name="sort" id="sort">
+                    <option selected value="alphabet">По алфавиту</option>
+                    <option value="expensive">Сначала дорогие</option>
+                    <option value="cheap">Сначала дешевые</option>
+                    <option value="rating">Рейтинг</option>
+                </select>
+            </div>
+        </div>
+        <section id="shop-items">
+        </section>
+        <p id="nothing-found">Ничего не найдено</p>
+    </main>
+    <footer id="contacts" class="container">
+        <a href="#" class="logo">Библиофил</a>
+    </footer>
+    <template id="item-template">
+        <div class="shop-item">
+            <img src="">
+            <div class="content">
+                <div class="sale"></div>
+                <div class="star"></div>
+                <div class="prices">
+                    <span class="final-price"></span>
+                    <span class="price"></span>
+                </div>
+                <h1></h1>
+                <div class="description">
+                    <span class="author"></span>
+                    <span class="year"></span>
+                </div>
+                <div class="rating"></div>
+            </div>
+        </div>
+    </template>
+    <script src="script.js"></script>
+</body>
+
+</html>
