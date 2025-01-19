@@ -1,5 +1,6 @@
 const books = [
     {
+        id: 1,
         title: "Мастер и Маргарита",
         author: 'Михаил Булгаков',
         year: '2012',
@@ -7,8 +8,10 @@ const books = [
         sale: 5,
         img: "images/mihail_bulgakov.jpg",
         rating: 4.45,
+        favourite: false,
     },
     {
+        id: 2,
         title: "День, когда я научился жить",
         author: 'Лоран Гунель',
         year: '2021',
@@ -16,8 +19,10 @@ const books = [
         sale: 5,
         img: "images/loran_runel.jpg",
         rating: 4.61,
+        favourite: false,
     },
     {
+        id: 3,
         title: "Если все кошки в мире исчезнут",
         author: 'Гэнки Кавамура',
         year: '2024',
@@ -25,8 +30,10 @@ const books = [
         sale: 7,
         img: "images/renki_kavamura.jpg",
         rating: 3.47,
+        favourite: false,
     },
     {
+        id: 4,
         title: "Маленький принц",
         author: 'Антуан де Сент-Экзюпери',
         year: '2019',
@@ -34,8 +41,10 @@ const books = [
         sale: 10,
         img: "images/antuan__de_sent-ekzyuperi.jpg",
         rating: 4.95,
+        favourite: false,
     },
     {
+        id: 5,
         title: "Гарри Поттер и философский камень",
         author: 'Джоана Роулинг',
         year: '2016',
@@ -43,8 +52,10 @@ const books = [
         sale: 20,
         img: "images/harri_potter_i_filosofskiy_kamen.jpg",
         rating: 2.25,
+        favourite: false,
     },
     {
+        id: 6,
         title: "Ресторан 06:06:06",
         author: 'Джим Пом Ю',
         year: '2024',
@@ -52,8 +63,10 @@ const books = [
         sale: 10,
         img: "images/restoran_060606.jpg",
         rating: 4.2,
+        favourite: false,
     },
     {
+        id: 7,
         title: "Дюна",
         author: 'Фрэнк Герберт',
         year: '2024',
@@ -61,8 +74,10 @@ const books = [
         sale: 20,
         img: "images/dyuna.jpg",
         rating: 3.4,
+        favourite: false,
     },
     {
+        id: 8,
         title: "451 по Фаренгейту",
         author: 'Рэй Брэдбери',
         year: '2022',
@@ -70,8 +85,10 @@ const books = [
         sale: 7,
         img: "images/451_gradus_po_Farengeytu.jpg",
         rating: 5,
+        favourite: false,
     },
     {
+        id: 9,
         title: "Облачный атлас",
         author: 'Дэвид Митчелл',
         year: '2022',
@@ -79,8 +96,10 @@ const books = [
         sale: 20,
         img: "images/oblachniy_atlas.jpg",
         rating: 4.67,
+        favourite: false,
     },
     {
+        id: 10,
         title: "(Не)чистый Минск",
         author: 'Писатели шуфлядки',
         year: '2024',
@@ -88,8 +107,10 @@ const books = [
         sale: 0,
         img: "images/Nechistiy_Minsk.jpg",
         rating: 4.69,
+        favourite: false,
     },
     {
+        id: 11,
         title: "Внутренняя опора",
         author: 'Анна Бабич',
         year: '2023',
@@ -97,8 +118,10 @@ const books = [
         sale: 5,
         img: "images/vnutrennyaya_opora.jpg",
         rating: 1.95,
+        favourite: false,
     },
     {
+        id: 12,
         title: "Гарри Поттер и принц-полукровка",
         author: 'Джоана Роулинг',
         year: '2020',
@@ -106,6 +129,7 @@ const books = [
         sale: 0,
         img: "images/harri_potter_i_princ-polukrovka.jpg",
         rating: 2.5,
+        favourite: false,
     },
 ];
 
@@ -114,11 +138,12 @@ let currentState = [...books];
 const itemsContainer = document.querySelector("#shop-items");
 const itemTemplate = document.querySelector("#item-template");
 const nothingFound = document.querySelector("#nothing-found");
+let favouriteItems = [];
 
 function renderItems(arr) {
 
     nothingFound.textContent = "";
-    itemsContainer.innerHTML = "";  
+    itemsContainer.innerHTML = "";
 
     arr.forEach((item) => {
         itemsContainer.append(prepareShopItem(item));
@@ -127,14 +152,12 @@ function renderItems(arr) {
     if (!arr.length) {
         nothingFound.textContent = "Ничего не найдено";
     }
-    
-    addToFavourite();
 }
 
 
 function prepareShopItem(shopItem) {
 
-    const { title, author, year, img, price, sale, rating } = shopItem;
+    const { title, author, year, img, price, sale, rating, favourite, id } = shopItem;
 
     const item = itemTemplate.content.cloneNode(true);
 
@@ -158,6 +181,25 @@ function prepareShopItem(shopItem) {
         star.classList.add("fa", "fa-star");
         ratingContainer.append(star);
     }
+
+    item.querySelector(".star").addEventListener("click", function (item) {
+
+        if (shopItem.favourite === false) {
+            addToFavourite(shopItem);
+        }
+        else {
+            deleteFromFavourite(shopItem, id);
+        };
+
+    });
+
+    if (shopItem.favourite === true) {
+        item.querySelector(".star").classList.add('done');
+    }
+    else {
+        item.querySelector(".star").classList.remove('done');
+    }
+
     return item;
 }
 
@@ -173,6 +215,11 @@ function sortByAlphabet(a, b) {
 
 renderItems(currentState.sort((a, b) => sortByAlphabet(a, b)));
 
+const favouritesButton = document.querySelector("#favourite-button");
+favouritesButton.addEventListener("click", () => renderItems(favouriteItems));
+
+const catalogButton = document.querySelector("#catalog-button");
+catalogButton.addEventListener("click", () => renderItems(currentState));
 
 const searchInput = document.querySelector("#search-input");
 const searchButton = document.querySelector("#search-btn");
@@ -225,23 +272,26 @@ sortControl.addEventListener("change", (event) => {
 
 });
 
-function addToFavourite() {
-    const favouriteButtons = document.querySelectorAll(".star");
+function addToFavourite(shopItem) {
     const favouriteCount = document.querySelector("#favourite-items");
+    const counter = parseFloat(favouriteCount.textContent);
 
-    for (let item of favouriteButtons) {
-        item.addEventListener("click", function () {
-            const counter = parseFloat(favouriteCount.textContent);
+    favouriteCount.textContent = counter + 1;
+    shopItem.favourite = true;
+    favouriteItems.push(shopItem);
 
-            if (item.classList.contains('done')) {
-                favouriteCount.textContent = counter - 1;
-                item.classList.toggle("done");
-            }
-            else {
-                favouriteCount.textContent = counter + 1;
-                item.classList.toggle("done");
-            }
-        });
-    }
+    renderItems(currentState);
+}
 
+function deleteFromFavourite(shopItem, id) {
+    const favouriteCount = document.querySelector("#favourite-items");
+    const counter = parseFloat(favouriteCount.textContent);
+
+    favouriteCount.textContent = counter - 1;
+    shopItem.favourite = false;
+
+    favouriteItems = favouriteItems.filter(el => el.id !== id);
+
+    renderItems(favouriteItems);
+    
 }
