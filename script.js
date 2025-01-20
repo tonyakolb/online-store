@@ -139,6 +139,7 @@ const itemsContainer = document.querySelector("#shop-items");
 const itemTemplate = document.querySelector("#item-template");
 const nothingFound = document.querySelector("#nothing-found");
 let favouriteItems = [];
+let mode = 'catalog';
 
 function renderItems(arr) {
 
@@ -153,7 +154,6 @@ function renderItems(arr) {
         nothingFound.textContent = "Ничего не найдено";
     }
 }
-
 
 function prepareShopItem(shopItem) {
 
@@ -182,25 +182,25 @@ function prepareShopItem(shopItem) {
         ratingContainer.append(star);
     }
 
-    item.querySelector(".star").addEventListener("click", function (item) {
+    if (shopItem.favourite) {
+        item.querySelector(".star").classList.add('done');
+    }
 
-        if (shopItem.favourite === false) {
+    item.querySelector(".star").addEventListener("click", function () {
+
+        if (!shopItem.favourite) {
+            this.classList.add('done');
             addToFavourite(shopItem);
         }
         else {
+            this.classList.remove('done');
             deleteFromFavourite(shopItem, id);
         };
 
     });
 
-    if (shopItem.favourite === true) {
-        item.querySelector(".star").classList.add('done');
-    }
-    else {
-        item.querySelector(".star").classList.remove('done');
-    }
-
     return item;
+
 }
 
 function sortByAlphabet(a, b) {
@@ -216,18 +216,24 @@ function sortByAlphabet(a, b) {
 renderItems(currentState.sort((a, b) => sortByAlphabet(a, b)));
 
 const favouritesButton = document.querySelector("#favourite-button");
-favouritesButton.addEventListener("click", () => renderItems(favouriteItems));
+favouritesButton.addEventListener("click", () => {
+    mode = 'favourites';
+    renderItems(favouriteItems);
+});
 
 const catalogButton = document.querySelector("#catalog-button");
-catalogButton.addEventListener("click", () => renderItems(currentState));
+catalogButton.addEventListener("click", () => {
+    mode = 'catalog';
+    renderItems(currentState);
+});
 
 const searchInput = document.querySelector("#search-input");
 const searchButton = document.querySelector("#search-btn");
 
-function applySearch() {
-    const searchString = searchInput.value.trim().toLowerCase();
+function applySearch(array) {
+    let searchString = searchInput.value.trim().toLowerCase();
 
-    currentState = books.filter((el) =>
+    currentState = array.filter((el) =>
         el.title.toLowerCase().includes(searchString) || el.author.toLowerCase().includes(searchString)
     );
     currentState.sort((a, b) => sortByAlphabet(a, b));
@@ -237,8 +243,23 @@ function applySearch() {
     sortControl.selectedIndex = 0;
 }
 
-searchButton.addEventListener("click", applySearch);
-searchInput.addEventListener("search", applySearch);
+searchButton.addEventListener("click", () => {
+    if (mode === 'favourites') {
+        applySearch(favouriteItems);
+    }
+    else {
+        applySearch(books);
+    }
+});
+
+searchInput.addEventListener("search", () => {
+    if (mode === 'catalog') {
+        applySearch(books);
+    }
+    else {
+        applySearch(favouriteItems);
+    }
+});
 
 
 const sortControl = document.querySelector("#sort");
@@ -248,7 +269,11 @@ sortControl.addEventListener("change", (event) => {
     const selectedOption = event.target.value;
     currentState.forEach((item) => {
         item['newPrice'] = +(item.price * (100 - item.sale) / 100).toFixed(2);
-    })
+    });
+
+    if (mode === 'favourites'){
+        currentState = favouriteItems;
+    }
 
     switch (selectedOption) {
         case "expensive": {
@@ -292,6 +317,7 @@ function deleteFromFavourite(shopItem, id) {
 
     favouriteItems = favouriteItems.filter(el => el.id !== id);
 
-    renderItems(favouriteItems);
-    
+    if (mode === 'favourites') {
+        renderItems(favouriteItems);
+    }
 }
