@@ -134,12 +134,18 @@ const books = [
 ];
 
 let currentState = [...books];
+let favouriteItems = [];
+let mode = 'catalog';
 
 const itemsContainer = document.querySelector("#shop-items");
 const itemTemplate = document.querySelector("#item-template");
 const nothingFound = document.querySelector("#nothing-found");
-let favouriteItems = [];
-let mode = 'catalog';
+const favouritesButton = document.querySelector("#favourite-button");
+const catalogButton = document.querySelector("#catalog-button");
+const searchInput = document.querySelector("#search-input");
+const searchButton = document.querySelector("#search-btn");
+const sortControl = document.querySelector("#sort");
+const favouriteCount = document.querySelector("#favourite-items");
 
 function renderItems(arr) {
 
@@ -158,23 +164,27 @@ function renderItems(arr) {
 function prepareShopItem(shopItem) {
 
     const { title, author, year, img, price, sale, rating, favourite, id } = shopItem;
-
     const item = itemTemplate.content.cloneNode(true);
+    const ratingContainer = item.querySelector(".rating");
+
+    const saleContainer = item.querySelector(".sale");
+    const priceContainer = item.querySelector(".price");
+    const star = item.querySelector(".star");
 
     item.querySelector("h1").textContent = title;
     item.querySelector(".author").textContent = `${author},`;
     item.querySelector(".year").textContent = ` ${year}`;
     item.querySelector("img").src = img;
-    item.querySelector(".sale").textContent = `-${sale}%`;
-    item.querySelector(".price").textContent = `${price} р.`;
+
+    saleContainer.textContent = `-${sale}%`;
+    priceContainer.textContent = `${price} р.`;
 
     if (sale === 0) {
-        item.querySelector(".sale").remove();
-        item.querySelector(".price").remove();
+        saleContainer.remove();
+        priceContainer.remove();
     }
-    item.querySelector(".final-price").textContent = `${(price * (100 - sale) / 100).toFixed(2)} р.`;
 
-    const ratingContainer = item.querySelector(".rating");
+    item.querySelector(".final-price").textContent = `${(price * (100 - sale) / 100).toFixed(2)} р.`;
 
     for (let i = 0; i < rating; i++) {
         const star = document.createElement("i");
@@ -183,10 +193,10 @@ function prepareShopItem(shopItem) {
     }
 
     if (shopItem.favourite) {
-        item.querySelector(".star").classList.add('done');
+        star.classList.add('done');
     }
 
-    item.querySelector(".star").addEventListener("click", function () {
+    star.addEventListener("click", function () {
 
         if (!shopItem.favourite) {
             this.classList.add('done');
@@ -200,7 +210,6 @@ function prepareShopItem(shopItem) {
     });
 
     return item;
-
 }
 
 function sortByAlphabet(a, b) {
@@ -215,54 +224,42 @@ function sortByAlphabet(a, b) {
 
 renderItems(currentState.sort((a, b) => sortByAlphabet(a, b)));
 
-const favouritesButton = document.querySelector("#favourite-button");
 favouritesButton.addEventListener("click", () => {
     mode = 'favourites';
-    renderItems(favouriteItems);
+    favouritesButton.classList.add('active');
+    catalogButton.classList.remove('active');
+    currentState = [...favouriteItems];
+    renderItems(favouriteItems.sort((a, b) => sortByAlphabet(a, b)));
 });
 
-const catalogButton = document.querySelector("#catalog-button");
 catalogButton.addEventListener("click", () => {
     mode = 'catalog';
-    renderItems(currentState);
+    catalogButton.classList.add('active');
+    favouritesButton.classList.remove('active');
+    currentState = [...books];
+    renderItems(currentState.sort((a, b) => sortByAlphabet(a, b)));
+    sortControl.selectedIndex = 0;
 });
 
-const searchInput = document.querySelector("#search-input");
-const searchButton = document.querySelector("#search-btn");
-
 function applySearch(array) {
-    let searchString = searchInput.value.trim().toLowerCase();
+    const searchString = searchInput.value.trim().toLowerCase();
 
     currentState = array.filter((el) =>
         el.title.toLowerCase().includes(searchString) || el.author.toLowerCase().includes(searchString)
     );
-    currentState.sort((a, b) => sortByAlphabet(a, b));
 
-    renderItems(currentState);
+    renderItems(currentState.sort((a, b) => sortByAlphabet(a, b)));
 
     sortControl.selectedIndex = 0;
 }
 
 searchButton.addEventListener("click", () => {
-    if (mode === 'favourites') {
-        applySearch(favouriteItems);
-    }
-    else {
-        applySearch(books);
-    }
+    applySearch(mode === 'catalog' ? books : favouriteItems)
 });
 
 searchInput.addEventListener("search", () => {
-    if (mode === 'catalog') {
-        applySearch(books);
-    }
-    else {
-        applySearch(favouriteItems);
-    }
+    applySearch(mode === 'catalog' ? books : favouriteItems)
 });
-
-
-const sortControl = document.querySelector("#sort");
 
 sortControl.addEventListener("change", (event) => {
 
@@ -270,10 +267,6 @@ sortControl.addEventListener("change", (event) => {
     currentState.forEach((item) => {
         item['newPrice'] = +(item.price * (100 - item.sale) / 100).toFixed(2);
     });
-
-    if (mode === 'favourites'){
-        currentState = favouriteItems;
-    }
 
     switch (selectedOption) {
         case "expensive": {
@@ -294,22 +287,17 @@ sortControl.addEventListener("change", (event) => {
         }
     }
     renderItems(currentState);
-
 });
 
 function addToFavourite(shopItem) {
-    const favouriteCount = document.querySelector("#favourite-items");
     const counter = parseFloat(favouriteCount.textContent);
 
     favouriteCount.textContent = counter + 1;
     shopItem.favourite = true;
     favouriteItems.push(shopItem);
-
-    renderItems(currentState);
 }
 
 function deleteFromFavourite(shopItem, id) {
-    const favouriteCount = document.querySelector("#favourite-items");
     const counter = parseFloat(favouriteCount.textContent);
 
     favouriteCount.textContent = counter - 1;

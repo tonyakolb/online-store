@@ -63,6 +63,18 @@ ul {
     padding: 20px 0;
 }
 
+.button {
+    border: 2px solid #AC7088;
+    border-radius: 5px;
+    background: #FFF;
+    width: 120px;
+}
+
+.active {
+    background: #AC7088;
+    color: #000;
+}
+
 .nav a,
 footer a {
     text-decoration: none;
