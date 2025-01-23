@@ -230,6 +230,7 @@ favouritesButton.addEventListener("click", () => {
     catalogButton.classList.remove('active');
     currentState = [...favouriteItems];
     renderItems(favouriteItems.sort((a, b) => sortByAlphabet(a, b)));
+    sortControl.selectedIndex = 0;
 });
 
 catalogButton.addEventListener("click", () => {
